@@ -1,6 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import 'firebase/analytics'
+import 'firebase/database'
 
 import { IonicVue } from '@ionic/vue';
 
@@ -22,6 +27,24 @@ import '@ionic/vue/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBC7jOQEELv5CYK20N4BgDei-An00bClgI",
+  authDomain: "muaythaisrilanka-155ca.firebaseapp.com",
+  projectId: "muaythaisrilanka-155ca",
+  storageBucket: "muaythaisrilanka-155ca.appspot.com",
+  messagingSenderId: "770858699836",
+  appId: "1:770858699836:web:cef07beaf4d0e1d0ec8739",
+  measurementId: "G-94HNX0TZFP"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+
+export const auth = firebase.auth();
+export const db = firebase.firestore();
+export const dbs = firebase.database();
+
 
 const app = createApp(App)
   .use(IonicVue)

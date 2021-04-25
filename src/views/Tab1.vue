@@ -1,28 +1,127 @@
 <template>
-  <ion-page>
+
     <ion-header>
       <ion-toolbar>
-        <ion-title>Tab 1</ion-title>
+        <ion-title> Book Training</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Tab 1</ion-title>
-        </ion-toolbar>
-      </ion-header>
-    
-      <ExploreContainer name="Tab 1 page" />
-    </ion-content>
-  </ion-page>
+<ion-card>
+  <ion-card-content>    
+          <div class = "center">
+  <ion-item>
+
+    <ion-label>Book Training Date</ion-label>
+    <ion-datetime id="Mypicker" display-format="D MMM YYYY H:mm" min="2021" max="2021" v-model="SelDate" ></ion-datetime>
+  </ion-item>
+      </div>
+
+      <form @submit.prevent = "updateMyDate()">
+            <ion-item >
+              <ion-label id="Slotslbl" position="floating">Available Slots </ion-label>    
+            </ion-item>
+
+            <ion-button
+              expand="block"
+              color="primary"
+              class="ion-margin-top"
+            >
+              {{"Book Your Slot"}}
+            </ion-button>
+      </form>
+
+
+
+  </ion-card-content>
+</ion-card>
 </template>
 
-<script lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
+<script>
+import { IonDatetime, IonItem, IonLabel } from '@ionic/vue';
+import { defineComponent } from 'vue';
+import { reactive, toRefs } from "vue";
+import { auth, db ,dbs} from "../main";
+//import { useRouter } from "vue-router";
 
-export default  {
-  name: 'Tab1',
-  components: { ExploreContainer, IonHeader, IonToolbar, IonTitle, IonContent, IonPage }
+
+export default defineComponent({
+  components: { IonDatetime, IonItem, IonLabel },
+
+  data(){
+    return{
+      SelDate:'',
+    }
+  },
+  methods:{
+    updateMyDate(){ 
+        console.log(this.SelDate)
+    }
+  },
+
+
+setup(){
+    const state = reactive({
+        SelDate : ''
+    });
+
+
+     //const router = useRouter();
+    const SelectedVal = (getSelectedVal)=>{
+
+    const Seledate = getSelectedVal.toISOString()
+    console.log(Seledate)
+
 }
+
+    function bookAslot(){       
+          let Uname = [];
+            //  let getSelectedVal;
+
+//-----------------------------------------Getting the name of the user ------------------------------------------------------------------//
+                  
+                  db.collection("users").where('email','==',auth.currentUser?.email).get().then((querySnapshot) => {
+                            querySnapshot.forEach((doc) => {
+                                Uname  = doc.data().name;
+                                console.log("role is "+Uname+" id is" +doc.id);
+                              
+                            });
+                          });
+//-------------------------------------------------------------------end------------------------------------------------------------------//
+
+
+//-----------------------------------------Updating the Student Attendence list and The slots Available------------------------------------------------------------------//
+                    let AvailSlots = 0;  
+                    let students = []
+                 dbs.ref('slots/'+SelectedVal).on('value',function(snapshot){
+
+                    students = snapshot.val().StudentsAttending;
+                    AvailSlots = snapshot.val().AvailableSlots;
+                    //    console.log(students)
+                });
+                    students.push(Uname); 
+                    console.log(students) 
+
+                    dbs.ref('slots/'+SelectedVal).update({
+                    AvailableSlots:AvailSlots-1,
+                     StudentsAttending:students
+            });
+//-------------------------------------------------------------------end------------------------------------------------------------------//            
+          }
+
+
+return {
+  ...toRefs(state),
+  SelectedVal,
+  bookAslot,
+  
+}
+}
+});
 </script>
+
+<style>
+.center{
+
+    text-align: center;
+}
+
+</style>
