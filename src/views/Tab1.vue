@@ -9,13 +9,12 @@
   <ion-card-content>    
           <div class = "center">
   <ion-item>
-
     <ion-label>Book Training Date</ion-label>
-    <ion-datetime id="Mypicker" display-format="D MMM YYYY H:mm" min="2021" max="2021" v-model="SelDate" ></ion-datetime>
+    <ion-datetime display-format="D MMM YYYY H:mm" min="2021" max="2021" v-model="SelDate" ></ion-datetime>
   </ion-item>
       </div>
 
-      <form @submit.prevent = "updateMyDate()">
+      <form @submit.prevent="getVals()">
             <ion-item >
               <ion-label id="Slotslbl" position="floating">Available Slots </ion-label>    
             </ion-item>
@@ -24,11 +23,12 @@
               expand="block"
               color="primary"
               class="ion-margin-top"
+              type="submit"
+              v-on:click="bookAslot()"
             >
               {{"Book Your Slot"}}
             </ion-button>
       </form>
-
 
 
   </ion-card-content>
@@ -38,7 +38,6 @@
 <script>
 import { IonDatetime, IonItem, IonLabel } from '@ionic/vue';
 import { defineComponent } from 'vue';
-import { reactive, toRefs } from "vue";
 import { auth, db ,dbs} from "../main";
 //import { useRouter } from "vue-router";
 
@@ -52,27 +51,7 @@ export default defineComponent({
     }
   },
   methods:{
-    updateMyDate(){ 
-        console.log(this.SelDate)
-    }
-  },
-
-
-setup(){
-    const state = reactive({
-        SelDate : ''
-    });
-
-
-     //const router = useRouter();
-    const SelectedVal = (getSelectedVal)=>{
-
-    const Seledate = getSelectedVal.toISOString()
-    console.log(Seledate)
-
-}
-
-    function bookAslot(){       
+       bookAslot(){       
           let Uname = [];
             //  let getSelectedVal;
 
@@ -91,7 +70,7 @@ setup(){
 //-----------------------------------------Updating the Student Attendence list and The slots Available------------------------------------------------------------------//
                     let AvailSlots = 0;  
                     let students = []
-                 dbs.ref('slots/'+SelectedVal).on('value',function(snapshot){
+                 dbs.ref('slots/'+this.SelDate).on('value',function(snapshot){
 
                     students = snapshot.val().StudentsAttending;
                     AvailSlots = snapshot.val().AvailableSlots;
@@ -100,7 +79,7 @@ setup(){
                     students.push(Uname); 
                     console.log(students) 
 
-                    dbs.ref('slots/'+SelectedVal).update({
+                    dbs.ref('slots/'+this.SelDate).update({
                     AvailableSlots:AvailSlots-1,
                      StudentsAttending:students
             });
@@ -108,11 +87,21 @@ setup(){
           }
 
 
-return {
-  ...toRefs(state),
-  SelectedVal,
-  bookAslot,
   
+  },
+
+
+setup(){
+
+    function getVals(){
+      console.log(this.SelDate)
+    }
+   
+
+
+return {
+ getVals
+ 
 }
 }
 });

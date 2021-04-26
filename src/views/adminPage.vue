@@ -53,18 +53,14 @@
             </ion-card-header>
 
 
-  
-
 <ion-card-content>
                     <ion-item>
                      <ion-label position="floating">Select Date</ion-label>
-                     <ion-datetime display-format="D MMM YYYY H:mm" min="2021" max="2021" v-model="SelDateForStudentDetalis" value="" ionchange = "getDate($event)"></ion-datetime>
+                     <ion-datetime display-format="D MMM YYYY h:mm a" min="2021" max="2021" v-model="SelDateForStudentDetalis" ></ion-datetime>
                      </ion-item>
 
 </ion-card-content>
 </ion-card>
-
-
 
             <ion-card>
             <ion-card-header>         
@@ -77,8 +73,8 @@
                 </ion-item>
                         <br>
                   <ion-item>
-                     <ion-label position="floating">Select Date</ion-label>
-                     <ion-datetime display-format="D MMM YYYY H:mm" min="2021" max="2021" v-model="SelDate" value="" ionchange = "getDate($event)"></ion-datetime>
+                     <ion-label position="floating">Select Date SelDateSlot</ion-label>
+                     <ion-datetime display-format="D MMM YYYY h:mm a" min="2021" max="2021" v-model="SelDate" v-bind:onChange="getVals()" ></ion-datetime>
                      </ion-item>
 
             <ion-button
@@ -87,7 +83,7 @@
               color="primary"
               class="ion-margin-top"
               type="submit"
-              v-on:click = "createSlots(slots , getSelectedValue)"
+              v-on:click ="createSlots(slots , getSelectedValue,)"
             >
               {{"Create Slots"}}
             </ion-button>
@@ -98,7 +94,7 @@
               color="secondary"
               class="ion-margin-top"
               type="submit"
-              v-on:click = "deleteSlots(slots , getSelectedValue)"
+              v-on:click ="deleteSlots(slots , getSelectedValue)"
             >
               {{"Delete Slots"}}
             </ion-button>
@@ -109,7 +105,7 @@
               color="secondary"
               class="ion-margin-top"
               type="submit"
-              v-on:click = "testBTN(slots)"
+              v-on:click ="getVals()"
             >
               {{"Test add names"}}
             </ion-button>
@@ -141,14 +137,16 @@ import {
   IonButton,
   IonLabel,
   IonItem,
+  IonDatetime
   //IonList,
 } from "@ionic/vue";
 import { auth, db , dbs } from "../main";
+import { defineComponent } from 'vue';
 import { reactive, toRefs } from "vue";
 //import { useRouter } from "vue-router";
 
 
-export default {
+export default defineComponent({
   name: "adminPage",
   components: {
     IonHeader,
@@ -165,11 +163,50 @@ export default {
     IonItem,
     IonLabel,
     IonButton,
+    IonDatetime
    // IonList,
   },
+
+    data(){      
+        return{
+            SelDate:'',
+            slots:Number,
+            students:['']
+        }
+    },
+    
+  methods:{         
+    getVals(){
+    console.log("the Date is "+this.SelDate)
+  },
+
+  createSlots()     
+ {     
+   
+    let studentVal = this.students
+             console.log("Creating slots"+this.slots)
+                dbs.ref('slots/'+this.slots).set({
+              AvailableSlots:this.slots,
+              StudentsAttending:['niland','anna'],
+              BookingDate:this.SelDate
+            });
+               
+                  dbs.ref('slots/'+this.slots).on('value',function(snapshot){
+                    studentVal = snapshot.val().StudentsAttending;
+                });
+                console.log(studentVal)
+    },
+
+    deleteSlots ()
+ {
+            alert("delete slots"+this.slots)
+             dbs.ref('slots/'+this.SelDate).remove();
+         }
+
+        },
+  
   setup() {
    // const router = useRouter();
-    
     const state = reactive({
       name: "",
       email: "",
@@ -177,11 +214,10 @@ export default {
       phoneNumber: "",
       errorMsg: "",
       slots: 0,
-      
+    //  SelDate: '',
       //getSelectedVal: ""
     });
 
-    let SelDate: any 
     let students = [''];
     
     const signUpWithEmailAndPassword = async (
@@ -210,25 +246,21 @@ export default {
 
        
 
-        
- const createSlots = async (       
-        slots: string,       
+ /*   
+ const createSlots =  (       
+        slots: string,  
+        SelDate = ''   
     ) => {     
              console.log("Creating slots"+slots+SelDate)
                 dbs.ref('slots/'+slots).set({
               AvailableSlots:slots,
               StudentsAttending:['niland','anna']
-            });
-               
+            });               
                   dbs.ref('slots/'+slots).on('value',function(snapshot){
-
                     students = snapshot.val().StudentsAttending;
                         console.log(students)
                 });
     };
-
-           
-
      const deleteSlots = async (
         slots: string,
         getSelectedVal: string
@@ -236,12 +268,7 @@ export default {
             alert("delete slots"+slots+getSelectedVal)
              dbs.ref('slots/'+slots).remove();
          };
-
-         function getDate (e: any)
-              {
-             alert(e)
-         }
-
+*/
 
 
 // try updating 
@@ -270,14 +297,13 @@ export default {
     return {
       ...toRefs(state),
       signUpWithEmailAndPassword,
-      createSlots,
-      getDate,
-      deleteSlots,
-      testBTN
+     // createSlots,
+     // deleteSlots,
+      testBTN,
      // AuthMode,
     };
   },
-};
+});
 </script>
 
 <style  scoped>

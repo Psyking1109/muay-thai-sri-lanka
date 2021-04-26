@@ -44,6 +44,7 @@ firebase.analytics();
 export const auth = firebase.auth();
 export const db = firebase.firestore();
 export const dbs = firebase.database();
+export const fb = firebase;
 
 
 const app = createApp(App)
