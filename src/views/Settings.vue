@@ -5,7 +5,32 @@
         <ion-title>Settings</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content :fullscreen="true">
+      <ion-card>
+        <ion-card-header>Reset Password</ion-card-header>
+      <ion-card-content>
+        <form 
+        @submit.prevent="resetPassword()">
+            <ion-item>
+             <ion-label position="floating">New Password</ion-label>
+              <ion-input v-model="newpass"></ion-input>
+            </ion-item>
+            <ion-item>
+             <ion-label position="floating">Confirm Password</ion-label>
+              <ion-input v-model="confpass"></ion-input>
+            </ion-item>
+               <ion-button
+              expand="block"
+              color="primary"
+              class="ion-margin-top"
+              type="submit"
+            >
+              {{  "Reset Password" }}
+            </ion-button>
+        </form>
+      </ion-card-content>
+      </ion-card>
+      
+    <ion-content >
              <ion-button
               expand="block"
               color="primary"
@@ -29,6 +54,33 @@ export default  {
   name: 'Setings',
   components: {  IonHeader, IonToolbar, IonTitle, IonContent, IonPage ,IonButton },
 
+ data(){
+   return{
+      newpass:'',
+      confpass:''
+   }
+ },
+ methods:{
+      resetPassword(){
+        const user = fb.auth().currentUser;
+        console.log(user)
+
+        if(this.newpass == this.confpass){
+            user?.updatePassword(this.confpass).then(()=>{
+
+              console.log("sucsess")
+            })
+            .catch((err)=>{
+              console.log(err)
+            })
+      }else{
+        console.log("passwords do not match")
+      }
+ },
+ 
+ },
+ 
+ 
  setup() {
     const router = useRouter();
 
@@ -40,7 +92,6 @@ export default  {
             .catch((err) =>{
                 console.log(err)
             })
-
     }
     return{
         logOut

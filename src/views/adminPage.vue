@@ -54,11 +54,12 @@
 
 
 <ion-card-content>
-                    <ion-item>
-                     <ion-label position="floating">Select Date</ion-label>
-                     <ion-datetime display-format="D MMM YYYY h:mm a" min="2021" max="2021" v-model="SelDateForStudentDetalis" ></ion-datetime>
-                     </ion-item>
-
+       <ion-list>
+          <ion-item v-for="slotName in NewArray" :key="slotName" >
+          <ion-label>{{ slotName }}</ion-label>
+      </ion-item>
+      </ion-list>
+  
 </ion-card-content>
 </ion-card>
 
@@ -83,7 +84,7 @@
               color="primary"
               class="ion-margin-top"
               type="submit"
-              v-on:click ="createSlots(slots , getSelectedValue,)"
+              v-on:click ="createSlots()"
             >
               {{"Create Slots"}}
             </ion-button>
@@ -99,16 +100,7 @@
               {{"Delete Slots"}}
             </ion-button>
 
-             <ion-button
-             id = "deleteSlotsbtn"
-              expand="block"
-              color="secondary"
-              class="ion-margin-top"
-              type="submit"
-              v-on:click ="getVals()"
-            >
-              {{"Test add names"}}
-            </ion-button>
+            
              </ion-card-content>
         </ion-card>
 
@@ -137,8 +129,8 @@ import {
   IonButton,
   IonLabel,
   IonItem,
-  IonDatetime
-  //IonList,
+  IonDatetime,
+  IonList,
 } from "@ionic/vue";
 import { auth, db , dbs } from "../main";
 import { defineComponent } from 'vue';
@@ -163,68 +155,129 @@ export default defineComponent({
     IonItem,
     IonLabel,
     IonButton,
-    IonDatetime
-   // IonList,
+    IonDatetime,
+    IonList
   },
 
     data(){      
         return{
             SelDate:'',
             slots:Number,
-            students:['']
+            students:[''],
+            SlotDate:'',
+            SlotDay:'',
+            SlotMonth:'',
+            SlotYear:'',
+            SlotHour:'',
+            SlotMinuites:'',
+            SlotName:'',
+            DataBaseSlotNames:Array
+            
         }
     },
     
   methods:{         
     getVals(){
-    console.log("the Date is "+this.SelDate)
+  //  console.log("the Date is ",this.SelDate)
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+      this.SlotDay = days[new Date(this.SelDate).getDay()]
+
+      this.SlotDate = new Date(this.SelDate).getDate().toString()
+      this.SlotMonth = months[new Date(this.SelDate).getMonth()]
+      this.SlotYear = new Date(this.SelDate).getFullYear().toString()
+      this.SlotHour = new Date(this.SelDate).getHours().toString()
+      this.SlotMinuites = new Date(this.SelDate).getMinutes().toString()
+      this.SlotName = this.SlotDate+this.SlotMonth+this.SlotYear+" At "+this.SlotHour+":"+this.SlotMinuites
+      console.log(this.SlotDate);
+      
+
+    //console.log( new Date(this.SelDate).getHours())
+    //console.log( new Date(this.SelDate).getMinutes())
+    //console.log( days[new Date(this.SelDate).getDay()])
+    //console.log(months[new Date(this.SelDate).getMonth()])
   },
 
   createSlots()     
  {     
-   
+ 
     let studentVal = this.students
-             console.log("Creating slots"+this.slots)
-                dbs.ref('slots/'+this.slots).set({
+             console.log("Creating slots"+this.SlotName)
+                dbs.ref('slots/'+this.SlotName).set({
               AvailableSlots:this.slots,
               StudentsAttending:['niland','anna'],
-              BookingDate:this.SelDate
+              BookingDay:this.SlotDay
+            
             });
                
-                  dbs.ref('slots/'+this.slots).on('value',function(snapshot){
+                  dbs.ref('slots/'+this.SlotName).on('value',function(snapshot){
                     studentVal = snapshot.val().StudentsAttending;
                 });
+                
+               
+       
+               // this.DatatableNames = tableNames
+              //  console.log(this.DatatableNames)//NOT WORKING 
                 console.log(studentVal)
     },
 
     deleteSlots ()
  {
-            alert("delete slots"+this.slots)
-             dbs.ref('slots/'+this.SelDate).remove();
-         }
-
+            alert("delete slots"+this.SlotName)
+             dbs.ref('slots/'+this.SlotName).remove();
+             
+         },
         },
   
+
   setup() {
    // const router = useRouter();
+
+
+    
+   // getVal()
+
     const state = reactive({
       name: "",
       email: "",
       password: "",
-      phoneNumber: "",
+    //  phoneNumber: "",
       errorMsg: "",
       slots: 0,
-    //  SelDate: '',
-      //getSelectedVal: ""
-    });
+      NewArray:[]
 
-    let students = [''];
-    
+    });
+//--------------------------------------------------------------Get Slot Names From FireBase------------------------------------------------//
+ function getVal(this: any,NewArray: any ){
+
+         let SlotNames = [] as any
+
+                  dbs.ref('slots/').once('value',function(snapshot){                                                         
+                     if (snapshot.val() !== null) {
+                       
+                   SlotNames = Object.keys(snapshot.val());
+                    
+                  for(const datas of SlotNames){
+                    console.log(datas)
+                    NewArray.push(datas)   
+                  }
+                           
+                   }
+                });
+
+    }
+
+getVal(state.NewArray)
+
+//--------------------------------------------------------------end------------------------------------------------------------------------//
+            
+
     const signUpWithEmailAndPassword = async (
       name: string,
       email: string,
       password: string,
-      phoneNumber: string
+      //phoneNumber: string
     ) => {
       try {
 
@@ -235,7 +288,7 @@ export default defineComponent({
         db.collection("users").doc(authRes.user?.uid).set({
           name,
           email,
-          phoneNumber,
+         // phoneNumber,
           role : "stundent"
         });
        // router.push("/tabs/tab1");
@@ -244,63 +297,14 @@ export default defineComponent({
       }
     };
 
+
+
        
-
- /*   
- const createSlots =  (       
-        slots: string,  
-        SelDate = ''   
-    ) => {     
-             console.log("Creating slots"+slots+SelDate)
-                dbs.ref('slots/'+slots).set({
-              AvailableSlots:slots,
-              StudentsAttending:['niland','anna']
-            });               
-                  dbs.ref('slots/'+slots).on('value',function(snapshot){
-                    students = snapshot.val().StudentsAttending;
-                        console.log(students)
-                });
-    };
-     const deleteSlots = async (
-        slots: string,
-        getSelectedVal: string
-    ) => {
-            alert("delete slots"+slots+getSelectedVal)
-             dbs.ref('slots/'+slots).remove();
-         };
-*/
-
-
-// try updating 
-          const testBTN = (
-                    slots: string,
-
-            ) =>{
-                    let AvailSlots = 0;
-                    const nextName = "Sachin";
-                 dbs.ref('slots/'+slots).on('value',function(snapshot){
-
-                    students = snapshot.val().StudentsAttending;
-                    AvailSlots = snapshot.val().AvailableSlots;
-                    //    console.log(students)
-                });
-                    students.push(nextName); 
-                    console.log(students) 
-
-                    dbs.ref('slots/'+slots).update({
-                    AvailableSlots:AvailSlots-1,
-                     StudentsAttending:students
-            });
-
-            }
-
     return {
       ...toRefs(state),
       signUpWithEmailAndPassword,
-     // createSlots,
-     // deleteSlots,
-      testBTN,
-     // AuthMode,
+      getVal,
+      
     };
   },
 });

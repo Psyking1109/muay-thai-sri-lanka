@@ -16,6 +16,12 @@
           <ion-icon :icon="square" />
           <ion-label>Tab 3</ion-label>
         </ion-tab-button>
+
+         <ion-tab-button tab="tab4" href="/tabs/Settings">
+          <ion-icon ios="ios-camera" md="md-camera"></ion-icon>
+          <ion-label>Settings</ion-label>
+        </ion-tab-button>
+        
       </ion-tab-bar>
     </ion-tabs>
   </ion-page>

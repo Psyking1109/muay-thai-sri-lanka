@@ -14,7 +14,7 @@
   </ion-item>
       </div>
 
-      <form @submit.prevent="getVals()">
+      <form @submit.prevent="bookAslot()">
             <ion-item >
               <ion-label id="Slotslbl" position="floating">Available Slots </ion-label>    
             </ion-item>
@@ -24,7 +24,7 @@
               color="primary"
               class="ion-margin-top"
               type="submit"
-              v-on:click="bookAslot()"
+            
             >
               {{"Book Your Slot"}}
             </ion-button>
@@ -33,21 +33,74 @@
 
   </ion-card-content>
 </ion-card>
+
+<ion-card>
+        <ion-card-header>Reset Password</ion-card-header>
+      <ion-card-content>
+        <form 
+        @submit.prevent="resetPassword()">
+            <ion-item>
+             <ion-label position="floating">New Password</ion-label>
+              <ion-input v-model="NewPassword"></ion-input>
+            </ion-item>
+            <ion-item>
+             <ion-label position="floating">Confirm Password</ion-label>
+              <ion-input v-model="ConfirmPasswor"></ion-input>
+            </ion-item>
+               <ion-button
+              expand="block"
+              color="primary"
+              class="ion-margin-top"
+              type="submit"
+            >
+              {{  "Reset Password" }}
+            </ion-button>
+        </form>
+      </ion-card-content>
+      </ion-card>
+
+
+
 </template>
 
 <script>
-import { IonDatetime, IonItem, IonLabel } from '@ionic/vue';
+import { 
+IonDatetime, 
+IonItem, 
+IonLabel , 
+IonCard,
+IonCardHeader,
+IonCardContent,
+IonHeader,
+IonTitle,
+IonToolbar,
+IonButton,
+IonInput} from '@ionic/vue';
+
 import { defineComponent } from 'vue';
-import { auth, db ,dbs} from "../main";
+import { auth, db ,dbs , fb} from "../main";
 //import { useRouter } from "vue-router";
 
 
 export default defineComponent({
-  components: { IonDatetime, IonItem, IonLabel },
+  components: { IonDatetime, 
+  IonItem, 
+  IonLabel ,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonInput
+  },
 
   data(){
     return{
       SelDate:'',
+      NewPassword:'',
+      ConfirmPasswor:''
     }
   },
   methods:{
@@ -61,13 +114,13 @@ export default defineComponent({
                             querySnapshot.forEach((doc) => {
                                 Uname  = doc.data().name;
                                 console.log("role is "+Uname+" id is" +doc.id);
-                              
+                                
                             });
                           });
 //-------------------------------------------------------------------end------------------------------------------------------------------//
 
 
-//-----------------------------------------Updating the Student Attendence list and The slots Available------------------------------------------------------------------//
+//-----------------------------------------Updating the Student Attendence list and The slots Available------------------------------------//
                     let AvailSlots = 0;  
                     let students = []
                  dbs.ref('slots/'+this.SelDate).on('value',function(snapshot){
@@ -83,28 +136,42 @@ export default defineComponent({
                     AvailableSlots:AvailSlots-1,
                      StudentsAttending:students
             });
+             },
 //-------------------------------------------------------------------end------------------------------------------------------------------//            
-          }
+        
+    resetPassword(){
+         const user = fb.auth().currentUser;
+        console.log(user)
+        console.log(this.ConfirmPasswor)
+       // debugger;
+        if(this.NewPassword == this.ConfirmPasswor){
+            user?.updatePassword(this.ConfirmPasswor).then(()=>{
 
-
-  
+              console.log("sucsess")
+            })
+            .catch((err)=>{
+              console.log(err)
+            })
+      }else{
+        console.log("passwords do not match")
+      }
+    }
   },
 
 
-setup(){
 
+setup(){
     function getVals(){
-      console.log(this.SelDate)
+        console.log(this.SelDate)
     }
    
-
-
 return {
  getVals
- 
 }
 }
 });
+
+
 </script>
 
 <style>
