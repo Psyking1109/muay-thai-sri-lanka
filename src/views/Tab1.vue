@@ -8,29 +8,13 @@
 <ion-card>
   <ion-card-content>    
           <div class = "center">
-  <ion-item>
-    <ion-label>Book Training Date</ion-label>
-    <ion-datetime display-format="D MMM YYYY H:mm" min="2021" max="2021" v-model="SelDate" ></ion-datetime>
-  </ion-item>
+   <ion-list>
+            <ion-label  position="floating">Available Slots </ion-label>  
+          <ion-item v-for="slotName in NewArray" :key="slotName" v-on:click="openModal(slotName)" >
+          <ion-label>{{ slotName }}</ion-label>
+        </ion-item>
+      </ion-list>
       </div>
-
-      <form @submit.prevent="bookAslot()">
-            <ion-item >
-              <ion-label id="Slotslbl" position="floating">Available Slots </ion-label>    
-            </ion-item>
-
-            <ion-button
-              expand="block"
-              color="primary"
-              class="ion-margin-top"
-              type="submit"
-            
-            >
-              {{"Book Your Slot"}}
-            </ion-button>
-      </form>
-
-
   </ion-card-content>
 </ion-card>
 
@@ -65,7 +49,6 @@
 
 <script>
 import { 
-IonDatetime, 
 IonItem, 
 IonLabel , 
 IonCard,
@@ -75,15 +58,19 @@ IonHeader,
 IonTitle,
 IonToolbar,
 IonButton,
-IonInput} from '@ionic/vue';
+IonInput,
+modalController
+} from '@ionic/vue';
 
 import { defineComponent } from 'vue';
 import { auth, db ,dbs , fb} from "../main";
+import { reactive, toRefs } from "vue";
+import Modal from '/src/views/ModalBookingDetails.vue'
 //import { useRouter } from "vue-router";
 
 
 export default defineComponent({
-  components: { IonDatetime, 
+  components: {  
   IonItem, 
   IonLabel ,
   IonCard,
@@ -93,7 +80,8 @@ export default defineComponent({
   IonTitle,
   IonToolbar,
   IonButton,
-  IonInput
+  IonInput,
+  //modalController
   },
 
   data(){
@@ -143,7 +131,7 @@ export default defineComponent({
          const user = fb.auth().currentUser;
         console.log(user)
         console.log(this.ConfirmPasswor)
-       // debugger;
+      
         if(this.NewPassword == this.ConfirmPasswor){
             user?.updatePassword(this.ConfirmPasswor).then(()=>{
 
@@ -158,15 +146,70 @@ export default defineComponent({
     }
   },
 
+ 
 
 
 setup(){
-    function getVals(){
-        console.log(this.SelDate)
+
+   //--------------------------------------------------------------Getting Function Model----------------------------------------------------//
+          
+         const openModal= async (slotName) =>{
+           
+                    console.log("database name",slotName)                 
+    const slotDetails = async (slotName) => {
+    const ref = await dbs.ref(`slots/${slotName}`);
+    const snapshot = await ref.once('value');
+    return snapshot.val();
+}
+    const FuncVal = await slotDetails(slotName) 
+       console.log("Slots - "+FuncVal.AvailableSlots+"Students Names "+FuncVal.StudentsAttending+" Booking Day"+FuncVal.BookingDay)
+      const modal = await modalController
+        .create({
+          component: Modal,
+          cssClass: 'my-custom-class',
+          componentProps: {
+            title: slotName,
+            studentsAttending: FuncVal.StudentsAttending,
+            AvailableSlots: FuncVal.AvailableSlots ,
+            BookingDay: FuncVal.BookingDay, 
+            pageType:"BookingPage",      
+              
+          },
+        })
+      return modal.present();
     }
+//----------------------------------------------------------------end---------------------------------------------------------------------//
+
+        const state = reactive({
+      slots: 0,
+      NewArray:[]
+
+    });
+
+     const getVal = async (NewArray) => {
+
+         let SlotNames = [] 
+
+                 await dbs.ref('slots/').once('value',function(snapshot){                                                         
+                     if (snapshot.val() !== null) {
+                       
+                   SlotNames = Object.keys(snapshot.val());
+
+                  for(const datas of SlotNames){
+                    console.log(datas)
+                    NewArray.push(datas)   
+                  }
+                           
+                   }
+                });
+    }
+  getVal(state.NewArray)
+
    
 return {
- getVals
+  ...toRefs(state),
+  openModal,
+ getVal
 }
 }
 });

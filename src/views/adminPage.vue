@@ -55,9 +55,9 @@
 
 <ion-card-content>
        <ion-list>
-          <ion-item v-for="slotName in NewArray" :key="slotName" >
+          <ion-item v-for="slotName in NewArray" :key="slotName" v-on:click="openModal(slotName)" >
           <ion-label>{{ slotName }}</ion-label>
-      </ion-item>
+        </ion-item>
       </ion-list>
   
 </ion-card-content>
@@ -100,13 +100,20 @@
               {{"Delete Slots"}}
             </ion-button>
 
+             <ion-button
+             id = "deleteSlotsbtn"
+              expand="block"
+              color="secondary"
+              class="ion-margin-top"
+              type="submit"
+              v-on:click ="tryvals()"
+            >
+              {{"Try Slots"}}
+            </ion-button>
+
             
              </ion-card-content>
         </ion-card>
-
-
-     
-
     </ion-content>
   </ion-page>
 </template>
@@ -130,11 +137,14 @@ import {
   IonLabel,
   IonItem,
   IonDatetime,
+  modalController,
   IonList,
 } from "@ionic/vue";
 import { auth, db , dbs } from "../main";
 import { defineComponent } from 'vue';
 import { reactive, toRefs } from "vue";
+
+import Modal from '/src/views/ModalBookingDetails.vue'
 //import { useRouter } from "vue-router";
 
 
@@ -156,6 +166,7 @@ export default defineComponent({
     IonLabel,
     IonButton,
     IonDatetime,
+   // modalController,
     IonList
   },
 
@@ -171,7 +182,8 @@ export default defineComponent({
             SlotHour:'',
             SlotMinuites:'',
             SlotName:'',
-            DataBaseSlotNames:Array
+           // DataBaseSlotNames:Array,
+            slotName:''
             
         }
     },
@@ -189,7 +201,8 @@ export default defineComponent({
       this.SlotYear = new Date(this.SelDate).getFullYear().toString()
       this.SlotHour = new Date(this.SelDate).getHours().toString()
       this.SlotMinuites = new Date(this.SelDate).getMinutes().toString()
-      this.SlotName = this.SlotDate+this.SlotMonth+this.SlotYear+" At "+this.SlotHour+":"+this.SlotMinuites
+      this.SlotName = this.SlotDate+this.SlotMonth+this.SlotYear+"At "+this.SlotHour+":"+this.SlotMinuites
+     
       console.log(this.SlotDate);
       
 
@@ -215,11 +228,10 @@ export default defineComponent({
                     studentVal = snapshot.val().StudentsAttending;
                 });
                 
-               
-       
+                     
                // this.DatatableNames = tableNames
               //  console.log(this.DatatableNames)//NOT WORKING 
-                console.log(studentVal)
+                console.log("Students",studentVal)
     },
 
     deleteSlots ()
@@ -228,15 +240,38 @@ export default defineComponent({
              dbs.ref('slots/'+this.SlotName).remove();
              
          },
+
+//--------------------------------------------------------------Getting Function Model----------------------------------------------------//
+            async openModal(slotName: string) {
+                    
+                    console.log("database name",slotName)                 
+ const slotDetails: any = async (slotName: any) => {
+    const ref = await dbs.ref(`slots/${slotName}`);
+    const snapshot = await ref.once('value');
+    return snapshot.val();
+}
+const FuncVal = await slotDetails(slotName) 
+       console.log("Slots - "+FuncVal.AvailableSlots+"Students Names "+FuncVal.StudentsAttending+" Booking Day"+FuncVal.BookingDay)
+      const modal = await modalController
+        .create({
+          component: Modal,
+          cssClass: 'my-custom-class',
+          componentProps: {
+            title: slotName,
+            studentsAttending: FuncVal.StudentsAttending,
+            AvailableSlots: FuncVal.AvailableSlots ,
+            BookingDay: FuncVal.BookingDay,
+            PageType:"AdminPage",
+            //close:() => this.clo() 
+          },
+        })
+      return modal.present();
+    },
+//----------------------------------------------------------------end---------------------------------------------------------------------//
         },
   
 
   setup() {
-   // const router = useRouter();
-
-
-    
-   // getVal()
 
     const state = reactive({
       name: "",
@@ -249,7 +284,7 @@ export default defineComponent({
 
     });
 //--------------------------------------------------------------Get Slot Names From FireBase------------------------------------------------//
- function getVal(this: any,NewArray: any ){
+ const getVal = async (NewArray: any ) => {
 
          let SlotNames = [] as any
 
@@ -257,7 +292,7 @@ export default defineComponent({
                      if (snapshot.val() !== null) {
                        
                    SlotNames = Object.keys(snapshot.val());
-                    
+
                   for(const datas of SlotNames){
                     console.log(datas)
                     NewArray.push(datas)   
@@ -265,14 +300,11 @@ export default defineComponent({
                            
                    }
                 });
-
     }
+  getVal(state.NewArray)
 
-getVal(state.NewArray)
-
-//--------------------------------------------------------------end------------------------------------------------------------------------//
+//----------------------------------------------------------------------------end-----------------------------------------------------------//
             
-
     const signUpWithEmailAndPassword = async (
       name: string,
       email: string,
