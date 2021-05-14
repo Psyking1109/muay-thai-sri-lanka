@@ -81,7 +81,7 @@ export default defineComponent({
   IonToolbar,
   IonButton,
   IonInput,
-  //modalController
+
   },
 
   data(){
@@ -92,41 +92,7 @@ export default defineComponent({
     }
   },
   methods:{
-       bookAslot(){       
-          let Uname = [];
-            //  let getSelectedVal;
-
-//-----------------------------------------Getting the name of the user ------------------------------------------------------------------//
-                  
-                  db.collection("users").where('email','==',auth.currentUser?.email).get().then((querySnapshot) => {
-                            querySnapshot.forEach((doc) => {
-                                Uname  = doc.data().name;
-                                console.log("role is "+Uname+" id is" +doc.id);
-                                
-                            });
-                          });
-//-------------------------------------------------------------------end------------------------------------------------------------------//
-
-
-//-----------------------------------------Updating the Student Attendence list and The slots Available------------------------------------//
-                    let AvailSlots = 0;  
-                    let students = []
-                 dbs.ref('slots/'+this.SelDate).on('value',function(snapshot){
-
-                    students = snapshot.val().StudentsAttending;
-                    AvailSlots = snapshot.val().AvailableSlots;
-                    //    console.log(students)
-                });
-                    students.push(Uname); 
-                    console.log(students) 
-
-                    dbs.ref('slots/'+this.SelDate).update({
-                    AvailableSlots:AvailSlots-1,
-                     StudentsAttending:students
-            });
-             },
-//-------------------------------------------------------------------end------------------------------------------------------------------//            
-        
+              
     resetPassword(){
          const user = fb.auth().currentUser;
         console.log(user)
@@ -150,8 +116,7 @@ export default defineComponent({
 
 
 setup(){
-
-   //--------------------------------------------------------------Getting Function Model----------------------------------------------------//
+ //--------------------------------------------------------------Getting Function Model----------------------------------------------------//
           
          const openModal= async (slotName) =>{
            
@@ -173,14 +138,17 @@ setup(){
             AvailableSlots: FuncVal.AvailableSlots ,
             BookingDay: FuncVal.BookingDay, 
             pageType:"BookingPage",      
+            
               
           },
         })
       return modal.present();
-    }
+    },
+
 //----------------------------------------------------------------end---------------------------------------------------------------------//
 
-        const state = reactive({
+
+         state = reactive({
       slots: 0,
       NewArray:[]
 
@@ -209,7 +177,7 @@ setup(){
 return {
   ...toRefs(state),
   openModal,
- getVal
+ getVal,
 }
 }
 });

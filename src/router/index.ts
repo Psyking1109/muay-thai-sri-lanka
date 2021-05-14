@@ -5,7 +5,7 @@ import Tabs from '../views/Tabs.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    component: () => import('@/views/Tab1.vue')
+    component: () => import('@/views/Login.vue')
   },
   {
     path: '/tabs/',
@@ -24,8 +24,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/Tab2.vue')
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3.vue')
+        path: 'Settings',
+        component: () => import('@/views/Settings.vue')
       },
       {
         path: 'adminPage',

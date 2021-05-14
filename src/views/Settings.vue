@@ -9,7 +9,7 @@
         <ion-card-header>Reset Password</ion-card-header>
       <ion-card-content>
         <form 
-        @submit.prevent="resetPassword()">
+        @submit.prevent="resetPassword(newpass,confpass)">
             <ion-item>
              <ion-label position="floating">New Password</ion-label>
               <ion-input v-model="newpass"></ion-input>
@@ -61,12 +61,12 @@ export default  {
    }
  },
  methods:{
-      resetPassword(){
+      resetPassword(NewPassword: string , ConfirmPassword: string){
         const user = fb.auth().currentUser;
         console.log(user)
 
-        if(this.newpass == this.confpass){
-            user?.updatePassword(this.confpass).then(()=>{
+        if(NewPassword == ConfirmPassword){
+            user?.updatePassword(ConfirmPassword).then(()=>{
 
               console.log("sucsess")
             })

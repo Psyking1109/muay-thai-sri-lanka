@@ -201,25 +201,18 @@ export default defineComponent({
       this.SlotYear = new Date(this.SelDate).getFullYear().toString()
       this.SlotHour = new Date(this.SelDate).getHours().toString()
       this.SlotMinuites = new Date(this.SelDate).getMinutes().toString()
-      this.SlotName = this.SlotDate+this.SlotMonth+this.SlotYear+"At "+this.SlotHour+":"+this.SlotMinuites
-     
-      console.log(this.SlotDate);
-      
+      this.SlotName = this.SlotDate+this.SlotMonth+this.SlotYear+" At "+this.SlotHour+":"+this.SlotMinuites
 
-    //console.log( new Date(this.SelDate).getHours())
-    //console.log( new Date(this.SelDate).getMinutes())
-    //console.log( days[new Date(this.SelDate).getDay()])
-    //console.log(months[new Date(this.SelDate).getMonth()])
   },
 
   createSlots()     
  {     
- 
+  
     let studentVal = this.students
              console.log("Creating slots"+this.SlotName)
                 dbs.ref('slots/'+this.SlotName).set({
               AvailableSlots:this.slots,
-              StudentsAttending:['niland','anna'],
+              StudentsAttending:['anna','niland'],
               BookingDay:this.SlotDay
             
             });
@@ -228,9 +221,6 @@ export default defineComponent({
                     studentVal = snapshot.val().StudentsAttending;
                 });
                 
-                     
-               // this.DatatableNames = tableNames
-              //  console.log(this.DatatableNames)//NOT WORKING 
                 console.log("Students",studentVal)
     },
 
@@ -251,6 +241,26 @@ export default defineComponent({
     return snapshot.val();
 }
 const FuncVal = await slotDetails(slotName) 
+//-------------------------------------------------------------Getting Student Name From ID-----------------------------------------------//
+const GetStudentName: [] = FuncVal.StudentsAttending
+
+     const getUsername = async(StudentName: []) =>{
+          debugger
+       for(const sname of StudentName){
+                  let UserName = [] as any
+                  const ref =  await db.collection("users").where('id','==',sname).get()
+                  ref.forEach((doc) => {
+
+                    UserName  = doc.data().name;
+                                                    
+                  });
+                  return UserName;
+       }
+        }
+
+       const StudentNames =  getUsername(GetStudentName)
+
+//----------------------------------------------------------------end---------------------------------------------------------------------//
        console.log("Slots - "+FuncVal.AvailableSlots+"Students Names "+FuncVal.StudentsAttending+" Booking Day"+FuncVal.BookingDay)
       const modal = await modalController
         .create({
@@ -258,15 +268,16 @@ const FuncVal = await slotDetails(slotName)
           cssClass: 'my-custom-class',
           componentProps: {
             title: slotName,
-            studentsAttending: FuncVal.StudentsAttending,
+            studentsAttending: StudentNames,
             AvailableSlots: FuncVal.AvailableSlots ,
             BookingDay: FuncVal.BookingDay,
             PageType:"AdminPage",
-            //close:() => this.clo() 
+            
           },
         })
       return modal.present();
     },
+
 //----------------------------------------------------------------end---------------------------------------------------------------------//
         },
   
@@ -328,10 +339,9 @@ const FuncVal = await slotDetails(slotName)
         state.errorMsg = error.message;
       }
     };
+    
 
 
-
-       
     return {
       ...toRefs(state),
       signUpWithEmailAndPassword,
