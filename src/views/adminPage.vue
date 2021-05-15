@@ -1,4 +1,3 @@
-
 <template>
   <ion-page>
     <ion-header>
@@ -16,8 +15,9 @@
 
         <ion-card-content>
           <form
-            @submit.prevent="signUpWithEmailAndPassword(name, email, password)">
-            <ion-item >
+            @submit.prevent="signUpWithEmailAndPassword(name, email, password)"
+          >
+            <ion-item>
               <ion-label position="floating">Name</ion-label>
               <ion-input v-model="name"></ion-input>
             </ion-item>
@@ -35,90 +35,70 @@
               class="ion-margin-top"
               type="submit"
             >
-              {{  "Sign Up" }}
+              {{ "Sign Up" }}
             </ion-button>
-
           </form>
         </ion-card-content>
 
         <ion-card-content v-if="errorMsg" class="error-message">
           {{ errorMsg }}
         </ion-card-content>
-      </ion-card>   
+      </ion-card>
 
-
-<ion-card>
-            <ion-card-header>         
+      <ion-card>
+        <ion-card-header>
           <ion-card-title>Student Attendence</ion-card-title>
-            </ion-card-header>
+        </ion-card-header>
 
+        <ion-card-content>
+          <ion-list>
+            <ion-item
+              v-for="slotName in NewArray"
+              :key="slotName"
+              v-on:click="openModal(slotName)"
+            >
+              <ion-label>{{ slotName }}</ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
 
-<ion-card-content>
-       <ion-list>
-          <ion-item v-for="slotName in NewArray" :key="slotName" v-on:click="openModal(slotName)" >
-          <ion-label>{{ slotName }}</ion-label>
-        </ion-item>
-      </ion-list>
-  
-</ion-card-content>
-</ion-card>
-
-            <ion-card>
-            <ion-card-header>         
+      <ion-card>
+        <ion-card-header>
           <ion-card-title>Create Slots for Members</ion-card-title>
-            </ion-card-header>
-             <ion-card-content >
-                <ion-item>
-              <ion-label position="floating">Slots Available</ion-label>
-              <ion-input v-model="slots"></ion-input>
-                </ion-item>
-                        <br>
-                  <ion-item>
-                     <ion-label position="floating">Select Date SelDateSlot</ion-label>
-                     <ion-datetime display-format="D MMM YYYY h:mm a" min="2021" max="2021" v-model="SelDate" v-bind:onChange="getVals()" ></ion-datetime>
-                     </ion-item>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="floating">Slots Available</ion-label>
+            <ion-input v-model="slots"></ion-input>
+          </ion-item>
+          <br />
+          <ion-item>
+            <ion-label position="floating">Select Date SelDateSlot</ion-label>
+            <ion-datetime
+              display-format="D MMM YYYY h:mm a"
+              min="2021"
+              max="2021"
+              v-model="SelDate"
+              v-bind:onChange="getVals()"
+            ></ion-datetime>
+          </ion-item>
 
-            <ion-button
-              id = "createSlotsbtn"
-              expand="block"
-              color="primary"
-              class="ion-margin-top"
-              type="submit"
-              v-on:click ="createSlots()"
-            >
-              {{"Create Slots"}}
-            </ion-button>
-
-             <ion-button
-             id = "deleteSlotsbtn"
-              expand="block"
-              color="secondary"
-              class="ion-margin-top"
-              type="submit"
-              v-on:click ="deleteSlots(slots , getSelectedValue)"
-            >
-              {{"Delete Slots"}}
-            </ion-button>
-
-             <ion-button
-             id = "deleteSlotsbtn"
-              expand="block"
-              color="secondary"
-              class="ion-margin-top"
-              type="submit"
-              v-on:click ="tryvals()"
-            >
-              {{"Try Slots"}}
-            </ion-button>
-
-            
-             </ion-card-content>
-        </ion-card>
+          <ion-button
+            id="createSlotsbtn"
+            expand="block"
+            color="primary"
+            class="ion-margin-top"
+            type="submit"
+            v-on:click="createSlots()"
+          >
+            {{ "Create Slots" }}
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
     </ion-content>
   </ion-page>
 </template>
-
-
 
 <script lang="ts">
 import {
@@ -140,13 +120,12 @@ import {
   modalController,
   IonList,
 } from "@ionic/vue";
-import { auth, db , dbs } from "../main";
-import { defineComponent } from 'vue';
+import { auth, db, dbs } from "../main";
+import { defineComponent } from "vue";
 import { reactive, toRefs } from "vue";
 
-import Modal from '/src/views/ModalBookingDetails.vue'
+import Modal from "/src/views/ModalBookingDetails.vue";
 //import { useRouter } from "vue-router";
-
 
 export default defineComponent({
   name: "adminPage",
@@ -166,193 +145,232 @@ export default defineComponent({
     IonLabel,
     IonButton,
     IonDatetime,
-   // modalController,
-    IonList
+    // modalController,
+    IonList,
   },
 
-    data(){      
-        return{
-            SelDate:'',
-            slots:Number,
-            students:[''],
-            SlotDate:'',
-            SlotDay:'',
-            SlotMonth:'',
-            SlotYear:'',
-            SlotHour:'',
-            SlotMinuites:'',
-            SlotName:'',
-           // DataBaseSlotNames:Array,
-            slotName:''
-            
-        }
-    },
-    
-  methods:{         
-    getVals(){
-  //  console.log("the Date is ",this.SelDate)
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-      this.SlotDay = days[new Date(this.SelDate).getDay()]
-
-      this.SlotDate = new Date(this.SelDate).getDate().toString()
-      this.SlotMonth = months[new Date(this.SelDate).getMonth()]
-      this.SlotYear = new Date(this.SelDate).getFullYear().toString()
-      this.SlotHour = new Date(this.SelDate).getHours().toString()
-      this.SlotMinuites = new Date(this.SelDate).getMinutes().toString()
-      this.SlotName = this.SlotDate+this.SlotMonth+this.SlotYear+" At "+this.SlotHour+":"+this.SlotMinuites
-
+  data() {
+    return {
+      SelDate: "",
+      slots: Number,
+      students: [""],
+      SlotDate: "",
+      SlotDay: "",
+      SlotMonth: "",
+      SlotYear: "",
+      SlotHour: "",
+      SlotMinuites: "",
+      SlotName: "",
+      // DataBaseSlotNames:Array,
+      slotName: "",
+    };
   },
 
-  createSlots()     
- {     
-  
-    let studentVal = this.students
-             console.log("Creating slots"+this.SlotName)
-                dbs.ref('slots/'+this.SlotName).set({
-              AvailableSlots:this.slots,
-              StudentsAttending:['anna','niland'],
-              BookingDay:this.SlotDay
-            
-            });
-               
-                  dbs.ref('slots/'+this.SlotName).on('value',function(snapshot){
-                    studentVal = snapshot.val().StudentsAttending;
-                });
-                
-                console.log("Students",studentVal)
+  methods: {
+    getVals() {
+      //  console.log("the Date is ",this.SelDate)
+      const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      this.SlotDay = days[new Date(this.SelDate).getDay()];
+
+      this.SlotDate = new Date(this.SelDate).getDate().toString();
+      this.SlotMonth = months[new Date(this.SelDate).getMonth()];
+      this.SlotYear = new Date(this.SelDate).getFullYear().toString();
+      this.SlotHour = new Date(this.SelDate).getHours().toString();
+      this.SlotMinuites = new Date(this.SelDate).getMinutes().toString();
+      this.SlotName =
+        this.SlotDate +
+        this.SlotMonth +
+        this.SlotYear +
+        " At " +
+        this.SlotHour +
+        ":" +
+        this.SlotMinuites;
     },
 
-    deleteSlots ()
- {
-            alert("delete slots"+this.SlotName)
-             dbs.ref('slots/'+this.SlotName).remove();
-             
-         },
+    createSlots() {
+      let studentVal = this.students;
+      console.log("Creating slots" + this.SlotName);
+      dbs.ref("slots/" + this.SlotName).set({
+        AvailableSlots: this.slots,
+        StudentsAttending: ["sCYNcu23MLXF8vqgXh6BSW2HULq2"],
+        BookingDay: this.SlotDay,
+      });
 
-//--------------------------------------------------------------Getting Function Model----------------------------------------------------//
-            async openModal(slotName: string) {
-                    
-                    console.log("database name",slotName)                 
- const slotDetails: any = async (slotName: any) => {
-    const ref = await dbs.ref(`slots/${slotName}`);
-    const snapshot = await ref.once('value');
-    return snapshot.val();
-}
-const FuncVal = await slotDetails(slotName) 
-//-------------------------------------------------------------Getting Student Name From ID-----------------------------------------------//
-const GetStudentName: [] = FuncVal.StudentsAttending
+      dbs.ref("slots/" + this.SlotName).on("value", function(snapshot) {
+        studentVal = snapshot.val().StudentsAttending;
+      });
 
-     const getUsername = async(StudentName: []) =>{
-          debugger
-       for(const sname of StudentName){
-                  let UserName = [] as any
-                  const ref =  await db.collection("users").where('id','==',sname).get()
-                  ref.forEach((doc) => {
+      console.log("Students", studentVal);
+    },
 
-                    UserName  = doc.data().name;
-                                                    
-                  });
-                  return UserName;
-       }
+    //--------------------------------------------------------------Getting Function Model----------------------------------------------------//
+    async openModal(slotName: string) {
+      console.log("database name", slotName);
+      const slotDetails: any = async (slotName: any) => {
+        const ref = await dbs.ref(`slots/${slotName}`);
+        const snapshot = await ref.once("value");
+        return snapshot.val();
+      };
+      const FuncVal = await slotDetails(slotName);
+      //-------------------------------------------------------------Getting Student Name From ID-----------------------------------------------//
+      const GetStudentName: any = Object.values(FuncVal.StudentsAttending);
+      const UserName = [] as any;
+      const getUsername = async (StudentName: []) => {
+        debugger;
+        for (const mailId of StudentName) {
+          
+          const ref = await db
+            .collection("users")
+            .where("email", "==", mailId)
+            .get();
+          ref.forEach((doc) => {
+            UserName.push(doc.data().name);
+          });        
         }
+        return UserName;
+      };
 
-       const StudentNames =  getUsername(GetStudentName)
+      let StudentNames: any = [];
+      
+      StudentNames =await getUsername(GetStudentName);
 
-//----------------------------------------------------------------end---------------------------------------------------------------------//
-       console.log("Slots - "+FuncVal.AvailableSlots+"Students Names "+FuncVal.StudentsAttending+" Booking Day"+FuncVal.BookingDay)
-      const modal = await modalController
-        .create({
-          component: Modal,
-          cssClass: 'my-custom-class',
-          componentProps: {
-            title: slotName,
-            studentsAttending: StudentNames,
-            AvailableSlots: FuncVal.AvailableSlots ,
-            BookingDay: FuncVal.BookingDay,
-            PageType:"AdminPage",
-            
-          },
-        })
+      //----------------------------------------------------------------end---------------------------------------------------------------------//
+      const modal = await modalController.create({
+        component: Modal,
+        cssClass: "my-custom-class",
+        componentProps: {
+          title: slotName,
+          studentsAttending: StudentNames,
+          AvailableSlots: FuncVal.AvailableSlots,
+          BookingDay: FuncVal.BookingDay,
+          PageType: "AdminPage",
+        },
+      });
       return modal.present();
     },
+    //----------------------------------------------------------------end---------------------------------------------------------------------//
 
-//----------------------------------------------------------------end---------------------------------------------------------------------//
-        },
-  
+    async tryOut(slotName: string) {
+      debugger;
+      const slotDetails: any = async (slotname: string) => {
+        const ref = await dbs.ref(`slots/${slotname}`);
+        const snapshot = await ref.once("value");
+        return snapshot.val();
+      };
+
+      const FuncVal = await slotDetails(slotName);
+      const GetStudentName = Object.values(FuncVal.StudentsAttending);
+
+      const getUsername = async (StudentName: any) => {
+        for (const sname of StudentName) {
+          let UserName = [] as any;
+          const ref = await db
+            .collection("users")
+            .where("email", "==", sname)
+            .get();
+          ref.forEach((doc) => {
+            UserName = doc.data().name;
+          });
+          return UserName;
+        }
+      };
+      const StudentNames = await getUsername(GetStudentName);
+      console.log("student names ", StudentNames);
+    },
+  },
 
   setup() {
-
     const state = reactive({
       name: "",
       email: "",
       password: "",
-    //  phoneNumber: "",
+      //  phoneNumber: "",
       errorMsg: "",
       slots: 0,
-      NewArray:[]
-
+      NewArray: [],
     });
-//--------------------------------------------------------------Get Slot Names From FireBase------------------------------------------------//
- const getVal = async (NewArray: any ) => {
+    //--------------------------------------------------------------Get Slot Names From FireBase------------------------------------------------//
+    const getVal = async (NewArray: any) => {
+      let SlotNames = [] as any;
 
-         let SlotNames = [] as any
+      dbs.ref("slots/").once("value", function(snapshot) {
+        if (snapshot.val() !== null) {
+          SlotNames = Object.keys(snapshot.val());
 
-                  dbs.ref('slots/').once('value',function(snapshot){                                                         
-                     if (snapshot.val() !== null) {
-                       
-                   SlotNames = Object.keys(snapshot.val());
+          for (const datas of SlotNames) {
+            console.log(datas);
+            NewArray.push(datas);
+          }
+        }
+      });
+    };
+    getVal(state.NewArray);
 
-                  for(const datas of SlotNames){
-                    console.log(datas)
-                    NewArray.push(datas)   
-                  }
-                           
-                   }
-                });
-    }
-  getVal(state.NewArray)
+    //----------------------------------------------------------------------------end-----------------------------------------------------------//
 
-//----------------------------------------------------------------------------end-----------------------------------------------------------//
-            
     const signUpWithEmailAndPassword = async (
       name: string,
       email: string,
-      password: string,
+      password: string
       //phoneNumber: string
     ) => {
       try {
-
         const authRes = await auth.createUserWithEmailAndPassword(
           email,
           password
         );
-        db.collection("users").doc(authRes.user?.uid).set({
-          name,
-          email,
-         // phoneNumber,
-          role : "stundent"
-        });
-       // router.push("/tabs/tab1");
+        db.collection("users")
+          .doc(authRes.user?.uid)
+          .set({
+            name,
+            email,
+            // phoneNumber,
+            role: "stundent",
+          });
+        // router.push("/tabs/tab1");
       } catch (error) {
         state.errorMsg = error.message;
       }
     };
-    
-
 
     return {
       ...toRefs(state),
       signUpWithEmailAndPassword,
       getVal,
-      
     };
   },
 });
 </script>
 
-<style  scoped>
+<style scoped>
+.my-custom-class {
+  height: 70%;
+  width: 100%;
+}
+
 .center {
   display: flex;
   height: 90vh;

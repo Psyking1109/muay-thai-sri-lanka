@@ -1,4 +1,3 @@
-
 <template>
   <ion-page>
     <ion-header>
@@ -6,23 +5,26 @@
         <ion-title> Muay Thai SriLanka </ion-title>
       </ion-toolbar>
     </ion-header>
-     
+
     <ion-content :fullscreen="true">
-      <ion-card >
+      <ion-card>
         <ion-card-header>
-        <ion-card-subtitle>  
-        <div class = "img-container">
-        <img src="resources/assets/muaythailogo.png" alt = "muay thai sriLanka logo" width="50" height="50">
-        </div>
-        </ion-card-subtitle>
-          
+          <ion-card-subtitle>
+            <div class="img-container">
+              <img
+                src="resources/assets/muaythailogo.png"
+                alt="muay thai sriLanka logo"
+                width="50"
+                height="50"
+              />
+            </div>
+          </ion-card-subtitle>
+
           <ion-card-title> Sign In</ion-card-title>
         </ion-card-header>
 
         <ion-card-content>
-          <form
-            @submit.prevent="signInWithEmailAndPassword(email, password)  "
-          >
+          <form @submit.prevent="signInWithEmailAndPassword(email, password)">
             <ion-item>
               <ion-label position="floating">Email</ion-label>
               <ion-input v-model="email"></ion-input>
@@ -37,9 +39,8 @@
               class="ion-margin-top"
               type="submit"
             >
-              {{  "Sign In" }}
+              {{ "Sign In" }}
             </ion-button>
-           
           </form>
         </ion-card-content>
 
@@ -51,8 +52,6 @@
   </ion-page>
 </template>
 
-
-
 <script lang="ts">
 import {
   IonPage,
@@ -61,7 +60,7 @@ import {
   IonTitle,
   IonContent,
   IonCard,
- // IonCardSubtitle,
+  // IonCardSubtitle,
   IonCardTitle,
   IonCardHeader,
   IonCardContent,
@@ -69,7 +68,6 @@ import {
   IonButton,
   IonLabel,
   IonItem,
-
 } from "@ionic/vue";
 import { auth, db } from "../main";
 import { reactive, toRefs } from "vue";
@@ -89,7 +87,7 @@ export default {
     IonContent,
     IonPage,
     IonCard,
-  //  IonCardSubtitle,
+    //  IonCardSubtitle,
     IonCardTitle,
     IonCardHeader,
     IonCardContent,
@@ -100,12 +98,12 @@ export default {
   },
   setup() {
     const router = useRouter();
-    
+
     const state = reactive({
-     // name: "",
+      // name: "",
       email: "",
       password: "",
-     // mode: AuthMode.SignIn,
+      // mode: AuthMode.SignIn,
       errorMsg: "",
     });
     const signInWithEmailAndPassword = async (
@@ -117,26 +115,25 @@ export default {
           state.errorMsg = "Email and Password Required";
           return;
         }
-      await auth.signInWithEmailAndPassword(email, password);
+        await auth.signInWithEmailAndPassword(email, password);
 
-            let role;
+        let role;
 
-    db.collection("users").where('email','==',auth.currentUser?.email).get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
+        db.collection("users")
+          .where("email", "==", auth.currentUser?.email)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              role = doc.data().role;
+              console.log("role is " + role + " id is" + doc.id);
 
-         role = doc.data().role;
-        console.log("role is "+role+" id is" +doc.id);
-
-           if(role == "Admin"){
+              if (role == "Admin") {
                 router.push("/tabs/adminPage");
-        }
-        else if(role == "stundent"){
+              } else if (role == "stundent") {
                 router.push("/tabs/tab1");
-        }
-       
-    });
-});
-
+              }
+            });
+          });
       } catch (error) {
         state.errorMsg = error.message;
       }
@@ -145,13 +142,12 @@ export default {
     return {
       ...toRefs(state),
       signInWithEmailAndPassword,
-
     };
   },
 };
 </script>
 
-<style  scoped>
+<style scoped>
 .center {
   display: flex;
   height: 90vh;
@@ -159,12 +155,12 @@ export default {
   align-items: center;
   justify-content: center;
 }
-      .img-container {
-        border-radius: 50%;
-        border: 3px green solid;
-        margin-bottom: 1rem;
-        text-align: center;
-      }
+.img-container {
+  border-radius: 50%;
+  border: 3px green solid;
+  margin-bottom: 1rem;
+  text-align: center;
+}
 .error-message {
   color: #842029;
   background-color: #f8d7da;
