@@ -74,7 +74,7 @@
           </ion-item>
           <br />
           <ion-item>
-            <ion-label position="floating">Select Date SelDateSlot</ion-label>
+            <ion-label position="floating">Select Date for Training</ion-label>
             <ion-datetime
               display-format="D MMM YYYY h:mm a"
               min="2021"
@@ -161,14 +161,12 @@ export default defineComponent({
       SlotHour: "",
       SlotMinuites: "",
       SlotName: "",
-      // DataBaseSlotNames:Array,
       slotName: "",
     };
   },
 
   methods: {
     getVals() {
-      //  console.log("the Date is ",this.SelDate)
       const days = [
         "Sunday",
         "Monday",
@@ -241,21 +239,18 @@ export default defineComponent({
       const getUsername = async (StudentName: []) => {
         debugger;
         for (const mailId of StudentName) {
-          
           const ref = await db
             .collection("users")
             .where("email", "==", mailId)
             .get();
           ref.forEach((doc) => {
             UserName.push(doc.data().name);
-          });        
+          });
         }
         return UserName;
       };
 
-      let StudentNames: any = [];
-      
-      StudentNames =await getUsername(GetStudentName);
+      const StudentNames = await getUsername(GetStudentName);
 
       //----------------------------------------------------------------end---------------------------------------------------------------------//
       const modal = await modalController.create({
@@ -350,7 +345,6 @@ export default defineComponent({
             // phoneNumber,
             role: "stundent",
           });
-        // router.push("/tabs/tab1");
       } catch (error) {
         state.errorMsg = error.message;
       }

@@ -72,12 +72,7 @@ import {
 import { auth, db } from "../main";
 import { reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
-/*
-enum AuthMode {
-  SignIn,
-  SignUp,
-}
-*/
+
 export default {
   name: "Authentication",
   components: {
@@ -87,7 +82,6 @@ export default {
     IonContent,
     IonPage,
     IonCard,
-    //  IonCardSubtitle,
     IonCardTitle,
     IonCardHeader,
     IonCardContent,
@@ -100,10 +94,8 @@ export default {
     const router = useRouter();
 
     const state = reactive({
-      // name: "",
       email: "",
       password: "",
-      // mode: AuthMode.SignIn,
       errorMsg: "",
     });
     const signInWithEmailAndPassword = async (
@@ -128,9 +120,9 @@ export default {
               console.log("role is " + role + " id is" + doc.id);
 
               if (role == "Admin") {
-                router.push("/tabs/adminPage");
+                router.push("/admintabs/adminPage");
               } else if (role == "stundent") {
-                router.push("/tabs/tab1");
+                router.push("/tabs/HomePage");
               }
             });
           });

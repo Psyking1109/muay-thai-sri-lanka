@@ -1,4 +1,5 @@
 <template>
+<ion-page>
   <ion-header>
     <ion-toolbar>
       <ion-title> Book Training</ion-title>
@@ -31,7 +32,7 @@
         </ion-item>
         <ion-item>
           <ion-label position="floating">Confirm Password</ion-label>
-          <ion-input v-model="ConfirmPasswor"></ion-input>
+          <ion-input v-model="ConfirmPassword"></ion-input>
         </ion-item>
         <ion-button
           expand="block"
@@ -44,6 +45,7 @@
       </form>
     </ion-card-content>
   </ion-card>
+</ion-page>
 </template>
 
 <script>
@@ -59,13 +61,15 @@ import {
   IonButton,
   IonInput,
   modalController,
+  IonList,
+  IonPage
 } from "@ionic/vue";
 
 import { defineComponent } from "vue";
-import { auth, db, dbs, fb } from "../main";
+import {dbs, fb } from "../main";
 import { reactive, toRefs } from "vue";
 import Modal from "/src/views/ModalBookingDetails.vue";
-//import { useRouter } from "vue-router";
+
 
 export default defineComponent({
   components: {
@@ -79,22 +83,24 @@ export default defineComponent({
     IonToolbar,
     IonButton,
     IonInput,
+    IonList,
+    IonPage
   },
 
   data() {
     return {
       SelDate: "",
       NewPassword: "",
-      ConfirmPasswor: "",
+      ConfirmPassword: "",
     };
   },
   methods: {
     resetPassword() {
       const user = fb.auth().currentUser;
       console.log(user);
-      console.log(this.ConfirmPasswor);
+      console.log(this.ConfirmPassword);
 
-      if (this.NewPassword == this.ConfirmPasswor) {
+      if (this.NewPassword == this.ConfirmPassword) {
         user
           ?.updatePassword(this.ConfirmPasswor)
           .then(() => {
@@ -139,7 +145,7 @@ export default defineComponent({
             pageType: "BookingPage",
           },
         });
-        return modal.present();
+        return await modal.present();
       },
       //----------------------------------------------------------------end---------------------------------------------------------------------//
 
@@ -173,8 +179,22 @@ export default defineComponent({
 });
 </script>
 
+
 <style>
+.my-custom-modal-css {
+   height: 20%;
+   top: 80%;
+   position: absolute; 
+   display: block;  
+}
+
 .center {
+  text-align: center;
+}
+.error-message {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
   text-align: center;
 }
 </style>

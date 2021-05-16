@@ -2,22 +2,15 @@
   <ion-page>
     <ion-tabs>
       <ion-tab-bar slots="bottom">
-
-        <ion-tab-button tab="HomePage" href="/tabs/HomePage">
+        <ion-tab-button tab="HomePage" href="/admintabs/HomePage">
           <ion-icon :icon="triangle" />
           <ion-label>Home Page</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button tab="BookingPage" href="/tabs/BookingPage">
+        <ion-tab-button tab="adminPage" href="/admintabs/adminPage">
           <ion-icon :icon="ellipse" />
           <ion-label>Booking Tab</ion-label>
         </ion-tab-button>
-
-        <ion-tab-button tab="Settings" href="/tabs/Settings">
-          <ion-icon :icon="square" />
-          <ion-label>Settings</ion-label>
-        </ion-tab-button>
-
       </ion-tab-bar>
     </ion-tabs>
   </ion-page>
