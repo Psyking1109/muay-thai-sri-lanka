@@ -219,9 +219,9 @@ export default defineComponent({
 
       dbs.ref("slots/" + this.SlotName).on("value", function(snapshot) {
         studentVal = snapshot.val().StudentsAttending;
-      });
-
+      });      
       console.log("Students", studentVal);
+      
     },
 
     //--------------------------------------------------------------Getting Function Model----------------------------------------------------//

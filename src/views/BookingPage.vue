@@ -7,7 +7,7 @@
   </ion-header>
   <ion-card>
     <ion-card-content>
-      <div class="center">
+      
         <ion-list>
           <ion-label position="floating">Available Slots </ion-label>
           <ion-item
@@ -18,31 +18,7 @@
             <ion-label>{{ slotName }}</ion-label>
           </ion-item>
         </ion-list>
-      </div>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-header>Reset Password</ion-card-header>
-    <ion-card-content>
-      <form @submit.prevent="resetPassword()">
-        <ion-item>
-          <ion-label position="floating">New Password</ion-label>
-          <ion-input v-model="NewPassword"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Confirm Password</ion-label>
-          <ion-input v-model="ConfirmPassword"></ion-input>
-        </ion-item>
-        <ion-button
-          expand="block"
-          color="primary"
-          class="ion-margin-top"
-          type="submit"
-        >
-          {{ "Reset Password" }}
-        </ion-button>
-      </form>
+      
     </ion-card-content>
   </ion-card>
 </ion-page>
@@ -53,20 +29,17 @@ import {
   IonItem,
   IonLabel,
   IonCard,
-  IonCardHeader,
   IonCardContent,
   IonHeader,
   IonTitle,
   IonToolbar,
-  IonButton,
-  IonInput,
   modalController,
   IonList,
   IonPage
 } from "@ionic/vue";
 
 import { defineComponent } from "vue";
-import {dbs, fb } from "../main";
+import {dbs,} from "../main";
 import { reactive, toRefs } from "vue";
 import Modal from "/src/views/ModalBookingDetails.vue";
 
@@ -75,14 +48,11 @@ export default defineComponent({
   components: {
     IonItem,
     IonLabel,
-    IonCard,
-    IonCardHeader,
+    IonCard,  
     IonCardContent,
     IonHeader,
     IonTitle,
     IonToolbar,
-    IonButton,
-    IonInput,
     IonList,
     IonPage
   },
@@ -94,27 +64,7 @@ export default defineComponent({
       ConfirmPassword: "",
     };
   },
-  methods: {
-    resetPassword() {
-      const user = fb.auth().currentUser;
-      console.log(user);
-      console.log(this.ConfirmPassword);
-
-      if (this.NewPassword == this.ConfirmPassword) {
-        user
-          ?.updatePassword(this.ConfirmPasswor)
-          .then(() => {
-            console.log("sucsess");
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        console.log("passwords do not match");
-      }
-    },
-  },
-
+ 
   setup() {
     //--------------------------------------------------------------Getting Function Model----------------------------------------------------//
 

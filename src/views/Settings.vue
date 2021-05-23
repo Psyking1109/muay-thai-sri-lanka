@@ -8,14 +8,14 @@
     <ion-card>
       <ion-card-header>Reset Password</ion-card-header>
       <ion-card-content>
-        <form @submit.prevent="resetPassword(newpass, confpass)">
+        <form @submit.prevent="resetPassword(NewPassword,ConfirmPassword)">
           <ion-item>
             <ion-label position="floating">New Password</ion-label>
-            <ion-input v-model="newpass"></ion-input>
+            <ion-input v-model="NewPassword"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">Confirm Password</ion-label>
-            <ion-input v-model="confpass"></ion-input>
+            <ion-input v-model="ConfirmPassword"></ion-input>
           </ion-item>
           <ion-button
             expand="block"
@@ -27,12 +27,16 @@
           </ion-button>
         </form>
       </ion-card-content>
+      <ion-card-content v-if="errorMsg" class="error-message">
+        {{ err }}
+      </ion-card-content>
     </ion-card>
     <br />
     <ion-content>
       <ion-button
+        router-link="/Login"
         expand="block"
-        color="primary"
+        color="secondary"
         class="ion-margin-top"
         type="button"
         v-on:click="logOut()"
@@ -59,7 +63,7 @@ import {
   IonButton,
 } from "@ionic/vue";
 import { fb } from "../main";
-import { useRouter } from "vue-router";
+//import { useRouter } from "vue-router";
 
 export default {
   name: "Setings",
@@ -80,21 +84,24 @@ export default {
 
   data() {
     return {
-      newpass: "",
-      confpass: "",
+      NewPassword: "",
+      ConfirmPassword: "",
     };
   },
 
-  setup() {
-    function resetPassword(newpass: string, confpass: string) {
-      debugger;
-      const user = fb.auth().currentUser;
-      console.log(user);
-      console.log(confpass);
+  method: {},
 
-      if (newpass == confpass) {
-        user
-          ?.updatePassword(confpass)
+  setup() {
+    async function resetPassword(NewPassword: string,ConfirmPassword: string) {
+      const user = fb.auth().currentUser;
+      debugger;
+      console.log(user);
+      console.log(NewPassword);
+      console.log(ConfirmPassword);
+
+      if (NewPassword == ConfirmPassword) {
+        await user
+          ?.updatePassword(ConfirmPassword)
           .then(() => {
             console.log("sucsess");
           })
@@ -106,22 +113,18 @@ export default {
       }
     }
 
-    const router = useRouter();
-
+   // const router = useRouter();
     const logOut = async () => {
       await fb
         .auth()
         .signOut()
-        .then(() => {
-          router.push("/tabs/Homepage");
-        })
         .catch((err) => {
           console.log(err);
         });
     };
     return {
-      logOut,
       resetPassword,
+      logOut,
     };
   },
 };

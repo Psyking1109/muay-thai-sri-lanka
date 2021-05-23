@@ -1,5 +1,6 @@
 <template>
   <ion-page>
+
     <ion-header>
       <ion-toolbar>
         <ion-title> Muay Thai SriLanka </ion-title>
@@ -60,7 +61,7 @@ import {
   IonTitle,
   IonContent,
   IonCard,
-  // IonCardSubtitle,
+  IonCardSubtitle,
   IonCardTitle,
   IonCardHeader,
   IonCardContent,
@@ -72,6 +73,7 @@ import {
 import { auth, db } from "../main";
 import { reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
+
 
 export default {
   name: "Authentication",
@@ -89,6 +91,7 @@ export default {
     IonItem,
     IonLabel,
     IonButton,
+    IonCardSubtitle
   },
   setup() {
     const router = useRouter();
@@ -140,6 +143,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 .center {
   display: flex;
   height: 90vh;

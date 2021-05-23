@@ -6,7 +6,6 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/analytics'
 import 'firebase/database'
-
 import { IonicVue } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
