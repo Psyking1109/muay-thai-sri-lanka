@@ -2,7 +2,7 @@
   <ion-page>
     <ion-tabs>
       <ion-tab-bar slots="bottom">
-        <ion-tab-button tab="HomePage" href="/admintabs/HomePage">
+        <ion-tab-button tab="AdminHome" href="/admintabs/AdminHome">
           <ion-icon :icon="triangle" />
           <ion-label>Home Page</ion-label>
         </ion-tab-button>

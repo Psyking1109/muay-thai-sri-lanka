@@ -123,7 +123,7 @@ export default {
               console.log("role is " + role + " id is" + doc.id);
 
               if (role == "Admin") {
-                router.push("/admintabs/adminPage");
+                router.push("/admintabs/AdminHome");
               } else if (role == "stundent") {
                 router.push("/tabs/HomePage");
               }

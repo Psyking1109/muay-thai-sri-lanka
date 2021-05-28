@@ -37,11 +37,11 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
-        redirect: '/admintabs/HomePage'
+        redirect: '/admintabs/AdminHome'
       },
       {
-        path: 'HomePage',
-        component: () => import('@/views/HomePage.vue')       
+        path: 'AdminHome',
+        component: () => import('@/views/AdminHome.vue')       
       },
       {
         path: 'adminPage',

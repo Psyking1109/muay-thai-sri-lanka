@@ -136,20 +136,25 @@ export default defineComponent({
       let Uname = "";
 
       Uname = await getUser();
-      //-----------------------------------------Updating the Student Attendence list and The slots Available------------------------------------//
+      //-------------------------------------Updating the Student Attendence list and The slots Available------------------------------------//
       let AvailSlots = 0;
       let students = [];
       const getStudDetails = await slotDetails(this.title);
 
       AvailSlots = getStudDetails.AvailableSlots;
       students = getStudDetails.StudentsAttending;
-
+      
+      if(typeof students === 'undefined'){
+          students = [Uname]
+      }else { 
       students.push(Uname);
-
+    }
       dbs.ref("slots/" + this.title).update({
         AvailableSlots: AvailSlots - 1,
         StudentsAttending: students,
       });
+
+      
       modalController.dismiss();
     }
     //-------------------------------------------------------------------end------------------------------------------------------------------//

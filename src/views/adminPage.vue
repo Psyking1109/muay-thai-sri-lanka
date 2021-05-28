@@ -12,10 +12,12 @@
           <ion-card-subtitle>Welcome Admin</ion-card-subtitle>
           <ion-card-title> Create New Member</ion-card-title>
         </ion-card-header>
-
         <ion-card-content>
           <form
-            @submit.prevent="signUpWithEmailAndPassword(name, email, password)"
+            ref="signUpForm"
+            @submit.prevent="
+              signUpWithEmailAndPassword(name, email, password, phoneNumber)
+            "
           >
             <ion-item>
               <ion-label position="floating">Name</ion-label>
@@ -24,6 +26,10 @@
             <ion-item>
               <ion-label position="floating">Email</ion-label>
               <ion-input v-model="email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">ContactNumber</ion-label>
+              <ion-input v-model="phoneNumber"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label position="floating">Password</ion-label>
@@ -37,6 +43,7 @@
             >
               {{ "Sign Up" }}
             </ion-button>
+
           </form>
         </ion-card-content>
 
@@ -119,6 +126,7 @@ import {
   IonDatetime,
   modalController,
   IonList,
+  toastController,
 } from "@ionic/vue";
 import { auth, db, dbs } from "../main";
 import { defineComponent } from "vue";
@@ -145,9 +153,10 @@ export default defineComponent({
     IonLabel,
     IonButton,
     IonDatetime,
-    // modalController,
     IonList,
+    //toastController
   },
+
 
   data() {
     return {
@@ -162,10 +171,55 @@ export default defineComponent({
       SlotMinuites: "",
       SlotName: "",
       slotName: "",
+      name: "",
+      email: "",
+      password: "",
+      phoneNumber: "",
+      errorMsg: "",
     };
   },
 
   methods: {
+
+    async openToast() {
+      const toast = await toastController
+        .create({
+          message: 'New Member Created',
+          duration: 2000,
+          color:"success",
+          position:"bottom"
+        })
+      return toast.present();
+    },
+
+    async signUpWithEmailAndPassword(
+      name: string,
+      email: string,
+      password: string,
+      phoneNumber: string
+    ) {
+      try {
+        const authRes = await auth.createUserWithEmailAndPassword(
+          email,
+          password
+        );
+        debugger;
+        db.collection("users")
+          .doc(authRes.user?.uid)
+          .set({
+            name,
+            email,
+            phoneNumber,
+            role: "stundent",
+          });
+        const SignUpfrm = this.$refs.signUpForm as any;
+        SignUpfrm.reset();
+        await this.openToast()
+      } catch (error) {
+        this.errorMsg = error.message;
+      }
+    },
+
     getVals() {
       const days = [
         "Sunday",
@@ -208,32 +262,34 @@ export default defineComponent({
         this.SlotMinuites;
     },
 
+
     createSlots() {
       let studentVal = this.students;
+
       console.log("Creating slots" + this.SlotName);
       dbs.ref("slots/" + this.SlotName).set({
         AvailableSlots: this.slots,
-        StudentsAttending: ["sCYNcu23MLXF8vqgXh6BSW2HULq2"],
+        StudentsAttending: [],
         BookingDay: this.SlotDay,
       });
 
       dbs.ref("slots/" + this.SlotName).on("value", function(snapshot) {
         studentVal = snapshot.val().StudentsAttending;
-      });      
+      });
       console.log("Students", studentVal);
-      
     },
 
     //--------------------------------------------------------------Getting Function Model----------------------------------------------------//
     async openModal(slotName: string) {
       console.log("database name", slotName);
+
       const slotDetails: any = async (slotName: any) => {
         const ref = await dbs.ref(`slots/${slotName}`);
         const snapshot = await ref.once("value");
         return snapshot.val();
       };
       const FuncVal = await slotDetails(slotName);
-      //-------------------------------------------------------------Getting Student Name From ID-----------------------------------------------//
+      //------------------------------------------------------Getting Student Name From emailID-----------------------------------------------//
       const GetStudentName: any = Object.values(FuncVal.StudentsAttending);
       const UserName = [] as any;
       const getUsername = async (StudentName: []) => {
@@ -267,43 +323,10 @@ export default defineComponent({
       return modal.present();
     },
     //----------------------------------------------------------------end---------------------------------------------------------------------//
-
-    async tryOut(slotName: string) {
-      debugger;
-      const slotDetails: any = async (slotname: string) => {
-        const ref = await dbs.ref(`slots/${slotname}`);
-        const snapshot = await ref.once("value");
-        return snapshot.val();
-      };
-
-      const FuncVal = await slotDetails(slotName);
-      const GetStudentName = Object.values(FuncVal.StudentsAttending);
-
-      const getUsername = async (StudentName: any) => {
-        for (const sname of StudentName) {
-          let UserName = [] as any;
-          const ref = await db
-            .collection("users")
-            .where("email", "==", sname)
-            .get();
-          ref.forEach((doc) => {
-            UserName = doc.data().name;
-          });
-          return UserName;
-        }
-      };
-      const StudentNames = await getUsername(GetStudentName);
-      console.log("student names ", StudentNames);
-    },
   },
 
   setup() {
     const state = reactive({
-      name: "",
-      email: "",
-      password: "",
-      //  phoneNumber: "",
-      errorMsg: "",
       slots: 0,
       NewArray: [],
     });
@@ -324,35 +347,13 @@ export default defineComponent({
     };
     getVal(state.NewArray);
 
-    //----------------------------------------------------------------------------end-----------------------------------------------------------//
 
-    const signUpWithEmailAndPassword = async (
-      name: string,
-      email: string,
-      password: string
-      //phoneNumber: string
-    ) => {
-      try {
-        const authRes = await auth.createUserWithEmailAndPassword(
-          email,
-          password
-        );
-        db.collection("users")
-          .doc(authRes.user?.uid)
-          .set({
-            name,
-            email,
-            // phoneNumber,
-            role: "stundent",
-          });
-      } catch (error) {
-        state.errorMsg = error.message;
-      }
-    };
+
+
+    //----------------------------------------------------------------------------end-----------------------------------------------------------//
 
     return {
       ...toRefs(state),
-      signUpWithEmailAndPassword,
       getVal,
     };
   },
@@ -360,9 +361,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.my-custom-class {
-  height: 70%;
-  width: 100%;
+.my-custom-class .modal-wrapper {
+  --height: 70%;
+  --width: 100%;
 }
 
 .center {
