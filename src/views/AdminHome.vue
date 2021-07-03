@@ -7,10 +7,14 @@
     </ion-header>
     <ion-content>
       <ion-card>
-        <ion-card-title>Student List</ion-card-title>
+        <ion-card-title class="titleClass"> Student List</ion-card-title>
         <ion-card-content>
           <ion-list>
-            <ion-item v-for="Student in StudentNames" :key="Student.email">
+            <ion-item
+              v-for="Student in StudentNames"
+              :key="Student.email"
+              class="listClass"
+            >
               <ion-label v-on:Click="GetStudentDetails(Student)">
                 {{ Student.name }}
               </ion-label>
@@ -117,3 +121,26 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.titleClass {
+  padding-left: 10px;
+  padding-top: 10px;
+  font-family: none;
+  font-variant: petite-caps;
+  color: rgb(67, 88, 156);
+  font-weight: bolder;
+  font-size: xx-large;
+}
+.listClass {
+  font-family: "Times New Roman";
+  color: rgb(1, 1, 1);
+  font-style: oblique;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.body {
+  background-color: blue;
+}
+</style>

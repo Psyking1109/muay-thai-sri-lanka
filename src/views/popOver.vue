@@ -1,7 +1,7 @@
 <template>
   <ion-header>
     <ion-toolbar>
-      <ion-title>Student Details </ion-title>
+      <ion-title class="titleClass"> Student Details </ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
@@ -55,3 +55,14 @@ export default defineComponent({
   },
 });
 </script>
+<style scoped>
+.titleClass{
+    padding-left: 10px;
+    padding-top: 10px;
+    font-family: none;
+    font-variant: petite-caps;
+    color:goldenrod;
+    font-weight: bolder;
+    font-size: x-large;
+}
+</style>

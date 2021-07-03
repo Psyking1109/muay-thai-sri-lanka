@@ -43,7 +43,6 @@
             >
               {{ "Sign Up" }}
             </ion-button>
-
           </form>
         </ion-card-content>
 
@@ -75,32 +74,37 @@
           <ion-card-title>Create Slots for Members</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-item>
-            <ion-label position="floating">Slots Available</ion-label>
-            <ion-input v-model="slots"></ion-input>
-          </ion-item>
-          <br />
-          <ion-item>
-            <ion-label position="floating">Select Date for Training</ion-label>
-            <ion-datetime
-              display-format="D MMM YYYY h:mm a"
-              min="2021"
-              max="2021"
-              v-model="SelDate"
-              v-bind:onChange="getVals()"
-            ></ion-datetime>
-          </ion-item>
+          <form 
+          ref="CreateSlotForm" 
+          @submit.prevent="createSlots()">
+            <ion-item>
+              <ion-label position="floating">Slots Available</ion-label>
+              <ion-input v-model="slots"></ion-input>
+            </ion-item>
+            <br />
+            <ion-item>
+              <ion-label position="floating"
+                >Select Date for Training</ion-label
+              >
+              <ion-datetime
+                display-format="D MMM YYYY h:mm a"
+                min="2021"
+                max="2021"
+                v-model="SelDate"
+                v-bind:onChange="getVals()"
+              ></ion-datetime>
+            </ion-item>
 
-          <ion-button
-            id="createSlotsbtn"
-            expand="block"
-            color="primary"
-            class="ion-margin-top"
-            type="submit"
-            v-on:click="createSlots()"
-          >
-            {{ "Create Slots" }}
-          </ion-button>
+            <ion-button
+              id="createSlotsbtn"
+              expand="block"
+              color="primary"
+              class="ion-margin-top"
+              type="submit"
+            >
+              {{ "Create Slots" }}
+            </ion-button>
+          </form>
         </ion-card-content>
       </ion-card>
     </ion-content>
@@ -157,7 +161,6 @@ export default defineComponent({
     //toastController
   },
 
-
   data() {
     return {
       SelDate: "",
@@ -180,15 +183,13 @@ export default defineComponent({
   },
 
   methods: {
-
-    async openToast() {
-      const toast = await toastController
-        .create({
-          message: 'New Member Created',
-          duration: 2000,
-          color:"success",
-          position:"bottom"
-        })
+    async openToast(message: string) {
+      const toast = await toastController.create({
+        message: message,
+        duration: 2000,
+        color: "success",
+        position: "bottom",
+      });
       return toast.present();
     },
 
@@ -214,7 +215,7 @@ export default defineComponent({
           });
         const SignUpfrm = this.$refs.signUpForm as any;
         SignUpfrm.reset();
-        await this.openToast()
+        await this.openToast("New Member Created !");
       } catch (error) {
         this.errorMsg = error.message;
       }
@@ -262,8 +263,8 @@ export default defineComponent({
         this.SlotMinuites;
     },
 
-
-    createSlots() {
+    async createSlots() {
+      debugger
       let studentVal = this.students;
 
       console.log("Creating slots" + this.SlotName);
@@ -277,6 +278,9 @@ export default defineComponent({
         studentVal = snapshot.val().StudentsAttending;
       });
       console.log("Students", studentVal);
+      const CreateSlotFrm = this.$refs.CreateSlotForm as any
+      CreateSlotFrm.reset()
+      await this.openToast("New Slot Created !");
     },
 
     //--------------------------------------------------------------Getting Function Model----------------------------------------------------//
@@ -346,9 +350,6 @@ export default defineComponent({
       });
     };
     getVal(state.NewArray);
-
-
-
 
     //----------------------------------------------------------------------------end-----------------------------------------------------------//
 

@@ -13,10 +13,8 @@
           <ion-card-subtitle>
             <div class="img-container">
               <img
-                src="resources/assets/muaythailogo.png"
+                src="public/assets/muaythaisrilankalogo.jpg"
                 alt="muay thai sriLanka logo"
-                width="50"
-                height="50"
               />
             </div>
           </ion-card-subtitle>
@@ -49,6 +47,8 @@
           {{ errorMsg }}
         </ion-card-content>
       </ion-card>
+
+      
     </ion-content>
   </ion-page>
 </template>
@@ -152,12 +152,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.img-container {
-  border-radius: 50%;
-  border: 3px green solid;
-  margin-bottom: 1rem;
-  text-align: center;
-}
+
 .error-message {
   color: #842029;
   background-color: #f8d7da;
