@@ -13,8 +13,12 @@
           <ion-card-subtitle>
             <div class="img-container">
               <img
-                src="public/assets/muaythaisrilankalogo.jpg"
+                src="./images/muaythaisrilankalogo.jpg"
                 alt="muay thai sriLanka logo"
+                height="200"
+                width="200"
+                
+                
               />
             </div>
           </ion-card-subtitle>
