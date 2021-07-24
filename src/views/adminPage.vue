@@ -28,7 +28,7 @@
               <ion-input v-model="email"></ion-input>
             </ion-item>
             <ion-item>
-              <ion-label position="floating">ContactNumber</ion-label>
+              <ion-label position="floating">Contact Number</ion-label>
               <ion-input v-model="phoneNumber"></ion-input>
             </ion-item>
             <ion-item>
