@@ -11,8 +11,8 @@
           <ion-icon :icon="ellipse" />
           <ion-label>Booking Tab</ion-label>
         </ion-tab-button>
-         <ion-tab-button tab="adminPage" href="/admintabs/Settings">
-          <ion-icon :icon="ellipse" />
+         <ion-tab-button tab="Settings" href="/admintabs/Settings">
+          <ion-icon :icon="square" />
           <ion-label>Settings</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
